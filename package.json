@@ -1,7 +1,7 @@
 {
-	"name": "custom-view-samples",
-	"displayName": "Custom view Samples",
-	"description": "Samples for VSCode's view API",
+	"name": "sql-management",
+	"displayName": "Sql management",
+	"description": "Sql management",
 	"version": "0.0.1",
 	"publisher": "vscode-samples",
 	"enableProposedApi": true,
@@ -9,7 +9,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
+		"url": "https://github.com/averin-a66/sql-management"
 	},
 	"engines": {
 		"vscode": "^1.57.0"
@@ -18,7 +18,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onView:jsonOutline",
+		"onView:sqlManagement",
 		"onLanguage:json",
 		"onLanguage:jsonc",
 		"onCommand:testView.reveal"
@@ -37,8 +37,8 @@
 		"views": {
 			"sql-explorer": [
 				{
-					"id": "jsonOutline",
-					"name": "Json Outline",
+					"id": "sqlManagement",
+					"name": "Sql management",
 					"icon": "media/dep.svg",
 					"contextualTitle": "Sql Explorer"
 				}
@@ -48,7 +48,7 @@
 		},
 		"commands": [
 			{
-				"command": "jsonOutline.refresh",
+				"command": "sqlManagement.refresh",
 				"title": "Refresh",
 				"icon": {
 					"light": "resources/light/refresh.svg",
@@ -56,7 +56,7 @@
 				}
 			},
 			{
-				"command": "jsonOutline.refreshNode",
+				"command": "sqlManagement.refreshNode",
 				"title": "Refresh",
 				"icon": {
 					"light": "resources/light/refresh.svg",
@@ -64,7 +64,7 @@
 				}
 			},
 			{
-				"command": "jsonOutline.renameNode",
+				"command": "sqlManagement.renameNode",
 				"title": "Rename"
 			}
 		],
@@ -73,28 +73,28 @@
 			],
 			"view/title": [
 				{
-					"command": "jsonOutline.refresh",
-					"when": "view == jsonOutline",
+					"command": "sqlManagement.refresh",
+					"when": "view == sqlManagement",
 					"group": "navigation"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "jsonOutline.renameNode",
-					"when": "view == jsonOutline"
+					"command": "sqlManagement.renameNode",
+					"when": "view == sqlManagement"
 				},
 				{
-					"command": "jsonOutline.refreshNode",
-					"when": "view == jsonOutline",
+					"command": "sqlManagement.refreshNode",
+					"when": "view == sqlManagement",
 					"group": "inline"
 				}
 			]
 		},
 		"configuration": [
 			{
-				"title": "JSON Outline",
+				"title": "SQL management",
 				"properties": {
-					"jsonOutline.autorefresh": {
+					"sqlManagement.autorefresh": {
 						"type": "boolean",
 						"default": false
 					}
