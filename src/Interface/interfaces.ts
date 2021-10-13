@@ -1,118 +1,121 @@
 import * as json from 'jsonc-parser';
 
-export interface IProperty {
-	name : string;
-	value : string;
-}
+export namespace sqlProvider {
 
-export interface IHasProperties {
-	properties : IProperty[];
-}
+	export interface IProperty {
+		name: string;
+		value: string;
+	}
 
-export interface IDDL {
-	CreateScript(command : string, properties : IProperty[]) : string;
-}
+	export interface IHasProperties {
+		properties: IProperty[];
+	}
 
-export interface IDbObject {
-	name : string;
-	schema : string;
-}
+	export interface IDDL {
+		CreateScript(command: string, properties: IProperty[]): string;
+	}
 
-export interface ITableColumn extends IDDL, IHasProperties {
-	name : string;
-	type : string;
-	isNullable : boolean;
-	isUnique : boolean;
-	isAutoincremental : boolean;
-	defaultValue : string;
-}
+	export interface IDbObject {
+		name: string;
+		schema: string;
+	}
 
-export interface IForeignKey extends IDDL, IHasProperties {
-	name : string;
-	columns : string[];
-	tableForeign : string;
-	columnsForeign : string[];
-}
+	export interface ITableColumn extends IDDL, IHasProperties {
+		name: string;
+		type: string;
+		isNullable: boolean;
+		isUnique: boolean;
+		isAutoincremental: boolean;
+		defaultValue: string;
+	}
 
-export enum DirOrder {
-	Asc,
-	Desc
-}
+	export interface IForeignKey extends IDDL, IHasProperties {
+		name: string;
+		columns: string[];
+		tableForeign: string;
+		columnsForeign: string[];
+	}
 
-export enum KindIndex {
-	Primary,
-	UniqueKey,
-	UniqueIndex
-}
+	export enum DirOrder {
+		Asc,
+		Desc
+	}
 
-export interface IIndexColumn {
-	name : string;
-	dir : DirOrder;
-}
+	export enum KindIndex {
+		None,
+		Primary,
+		UniqueKey,
+		UniqueIndex
+	}
 
-export interface IIndex extends IDDL, IHasProperties {
-	name : string;
-	columns : IIndexColumn[];
-	kind : KindIndex;
-	isCluster : boolean;
-	fillFactor : number;
-}
+	export interface IIndexColumn {
+		name: string;
+		dir: DirOrder;
+	}
 
-export interface IView extends IDDL, IDbObject, IHasProperties {
-	columns : ITableColumn[];
-	indexes : IIndex[];
-}
+	export interface IIndex extends IDDL, IHasProperties {
+		name: string;
+		columns: IIndexColumn[];
+		kind: KindIndex;
+		isCluster: boolean;
+		fillFactor: number;
+	}
 
-export interface ITable extends IView {
-	foreignKeys : IForeignKey[];
-}
+	export interface IView extends IDDL, IDbObject, IHasProperties {
+		columns: ITableColumn[];
+		indexes: IIndex[];
+	}
 
-export enum KindProgramObject {
-	Procedure,
-	FunctionScalar,
-	FunctionTable
-}
+	export interface ITable extends IView {
+		foreignKeys: IForeignKey[];
+	}
 
-export enum DirParams {
-	In,
-	Out,
-	InOut
-}
+	export enum KindProgramObject {
+		Procedure,
+		FunctionScalar,
+		FunctionTable
+	}
 
-export interface IParameter 
-{
-	name : string;
-	type : string;
-	dir : DirParams;
-}
+	export enum DirParams {
+		In,
+		Out,
+		InOut
+	}
 
-export interface IProgramObject extends IDDL, IDbObject, IHasProperties {
-	parameters : IParameter[];
-}
+	export interface IParameter {
+		name: string;
+		type: string;
+		dir: DirParams;
+	}
 
-export interface IScalarFunction extends IProgramObject {
-	typeReturn : string;
-}
+	export interface IProgramObject extends IDDL, IDbObject, IHasProperties {
+		parameters: IParameter[];
+	}
 
-export interface ITableFunction extends IProgramObject {
-	tableResult : ITableColumn[];
-}
+	export interface IScalarFunction extends IProgramObject {
+		typeReturn: string;
+	}
 
-export interface IProcedure extends IProgramObject {
-	tableResult : ITableColumn[];
-}
+	export interface ITableFunction extends IProgramObject {
+		tableResult: ITableColumn[];
+	}
 
-export interface ISqlSchema {
-    nameSqlServer: string;
-    connection( connectionString: string ) : boolean;
-	getSchemaJSON() : string;
-	getSourceObject(name : string) : string;
+	export interface IProcedure extends IProgramObject {
+		tableResult: ITableColumn[];
+	}
 
-	schemas : string[];
-	tables : ITable[];
-	views : IView[];
-	functions : IProgramObject[];
-	scalarFunctions : IScalarFunction[];
-	tableFunctions : ITableFunction[];
-	procedures : IProcedure[];
+	export interface ISqlSchema {
+		nameSqlServer: string;
+		connection(connectionString: string): boolean;
+		getSchemaJSON(): string;
+		getSourceObject(name: string): string;
+
+		schemas: string[];
+		tables: ITable[];
+		views: IView[];
+		functions: IProgramObject[];
+		scalarFunctions: IScalarFunction[];
+		tableFunctions: ITableFunction[];
+		procedures: IProcedure[];
+	}
 }
