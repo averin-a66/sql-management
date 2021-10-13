@@ -1,5 +1,5 @@
 import { off } from 'process';
-import { jsonProperty, Serializable } from "Serializable";
+import { jsonProperty, Serializable } from "ts-serializable";
 import * as sqlSchema from '../Interface/interfaces';
 
 import IProperty = sqlSchema.sqlProvider.IProperty;

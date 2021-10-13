@@ -1,7 +1,9 @@
-import { TableColumn } from '../src/sqlProvider/PGProvider';
+import * as prv from '../src/sqlProvider/PGProvider';
 import { suite, test } from '@testdeck/mocha';
 import * as _chai from 'chai';
 import { expect } from 'chai';
+
+import TableColumn = prv.PGProvider.TableColumn;
 
 _chai.should();
 _chai.expect;

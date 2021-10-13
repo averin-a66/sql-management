@@ -43,8 +43,7 @@
 					"contextualTitle": "Sql Explorer"
 				}
 			],
-			"explorer": [
-			]
+			"explorer": []
 		},
 		"commands": [
 			{
@@ -69,8 +68,7 @@
 			}
 		],
 		"menus": {
-			"commandPalette": [
-			],
+			"commandPalette": [],
 			"view/title": [
 				{
 					"command": "sqlManagement.refresh",
@@ -109,14 +107,21 @@
 		"lint": "eslint . --ext .ts,.tsx"
 	},
 	"devDependencies": {
+		"@testdeck/mocha": "^0.1.2",
+		"@types/chai": "^4.2.22",
 		"@types/mkdirp": "^0.5.2",
 		"@types/node": "^12.12.0",
 		"@types/rimraf": "^2.0.2",
 		"@types/vscode": "^1.52.0",
 		"@typescript-eslint/eslint-plugin": "^4.16.0",
 		"@typescript-eslint/parser": "^4.16.0",
+		"chai": "^4.3.4",
 		"eslint": "^7.21.0",
 		"gulp": "^4.0.2",
+		"mocha": "^9.1.2",
+		"nyc": "^15.1.0",
+		"ts-node": "^10.3.0",
+		"ts-serializable": "^2.0.40",
 		"typescript": "^4.4.3"
 	},
 	"dependencies": {
@@ -124,8 +129,8 @@
 		"jsonc-parser": "^0.4.2",
 		"minimist": "^0.2.1",
 		"mkdirp": "^0.5.1",
-		"rimraf": "^2.6.2",
-		"pg": "8.7.1"
+		"pg": "8.7.1",
+		"rimraf": "^2.6.2"
 	},
 	"test": "nyc ./node_modules/.bin/_mocha 'test/**/*.test.ts'"
 }
