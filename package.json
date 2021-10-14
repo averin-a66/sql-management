@@ -104,7 +104,8 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
-		"lint": "eslint . --ext .ts,.tsx"
+		"lint": "eslint . --ext .ts,.tsx",
+		"test": "nyc ./node_modules/.bin/_mocha 'test/**/*.test.ts'"
 	},
 	"devDependencies": {
 		"@testdeck/mocha": "^0.1.2",
@@ -131,6 +132,5 @@
 		"mkdirp": "^0.5.1",
 		"pg": "8.7.1",
 		"rimraf": "^2.6.2"
-	},
-	"test": "nyc ./node_modules/.bin/_mocha 'test/**/*.test.ts'"
+	}
 }

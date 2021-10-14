@@ -1,7 +1,7 @@
-import { register } from 'ts-node';
-import testTSConfig from './test/tsconfig.json';
+const tsNode = require('ts-node');
+const testTSConfig = require('./test/tsconfig.json');
 
-register({
+tsNode.register({
   files: true,
   transpileOnly: true,
   project: './test/tsconfig.json'

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as json from 'jsonc-parser';
 import * as path from 'path';
+import * as dbg from './sqlProvider/PGDebug';
 
 export class SqlManagementProvider implements vscode.TreeDataProvider<number> {
 
@@ -20,6 +21,8 @@ export class SqlManagementProvider implements vscode.TreeDataProvider<number> {
 			this.autoRefresh = vscode.workspace.getConfiguration('jsonOutline').get('autorefresh');
 		});
 		this.onActiveEditorChanged();
+
+		dbg.dbgPGProvider.debugTableColumn();
 	}
 
 	refresh(offset?: number): void {
