@@ -2,17 +2,16 @@ import * as json from 'jsonc-parser';
 
 export namespace sqlProvider {
 
-	export interface IProperty {
-		name: string;
-		value: string;
+	export interface IProperties {
+		[values: string] : string;
 	}
 
 	export interface IHasProperties {
-		properties: IProperty[];
+		properties: IProperties;
 	}
 
 	export interface IDDL {
-		CreateScript(command: string, properties: IProperty[]): string;
+		CreateScript(command: string, properties: IProperties): string;
 	}
 
 	export interface IDbObject {
@@ -61,13 +60,25 @@ export namespace sqlProvider {
 		fillFactor: number;
 	}
 
+	export interface IIndexes {
+		[values: string] : IIndex;
+	}
+
+	export interface IColumns {
+		[values: string] : ITableColumn;
+	}
+
 	export interface IView extends IDDL, IDbObject, IHasProperties {
-		columns: ITableColumn[];
-		indexes: IIndex[];
+		columns: IColumns;
+		indexes: IIndexes;
+	}
+
+	export interface IForeignKeys {
+		[values: string] : IForeignKey;
 	}
 
 	export interface ITable extends IView {
-		foreignKeys: IForeignKey[];
+		foreignKeys: IForeignKeys;
 	}
 
 	export enum KindProgramObject {
@@ -88,8 +99,12 @@ export namespace sqlProvider {
 		dir: DirParams;
 	}
 
+	export interface IParameters {
+		[values: string] : IParameter;
+	}
+
 	export interface IProgramObject extends IDDL, IDbObject, IHasProperties {
-		parameters: IParameter[];
+		parameters: IParameters;
 	}
 
 	export interface IScalarFunction extends IProgramObject {
@@ -97,11 +112,11 @@ export namespace sqlProvider {
 	}
 
 	export interface ITableFunction extends IProgramObject {
-		tableResult: ITableColumn[];
+		tableResult: IColumns;
 	}
 
 	export interface IProcedure extends IProgramObject {
-		tableResult: ITableColumn[];
+		tableResult: IColumns;
 	}
 
 	export interface ISqlSchema {
