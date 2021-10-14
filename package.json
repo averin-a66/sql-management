@@ -92,7 +92,7 @@
 			{
 				"title": "SQL management",
 				"properties": {
-					"sqlManagement.autorefresh": {
+					"sqlManagement.autoRefresh": {
 						"type": "boolean",
 						"default": false
 					}

@@ -25,7 +25,7 @@ export namespace sqlProvider {
 		type: string;
 		isNullable: boolean;
 		isUnique: boolean;
-		isAutoincremental: boolean;
+		isAutoIncremental: boolean;
 		defaultValue: string;
 	}
 

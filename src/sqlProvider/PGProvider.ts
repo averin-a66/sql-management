@@ -1,5 +1,5 @@
 import { off } from 'process';
-import { jsonProperty, Serializable } from "ts-serializable";
+//import { jsonProperty, Serializable } from "ts-serializable";
 import * as sqlSchema from '../Interface/interfaces';
 
 import IProperty = sqlSchema.sqlProvider.IProperty;
@@ -14,31 +14,31 @@ import ITable = sqlSchema.sqlProvider.ITable;
 
 export namespace PGProvider {
 
-	export class Property extends Serializable implements IProperty {
-		@jsonProperty(String)
+	export class Property /*extends Serializable*/ implements IProperty {
+		//@jsonProperty(String)
 		public name: string;
-		@jsonProperty(String)
+		//@jsonProperty(String)
 		public value: string;
 
 		constructor(name: string, value: string) {
-			super();
+			//super();
 			this.name = name;
 			this.value = value;
 		}
 	}
 
-	export class TableColumn extends Serializable implements ITableColumn {
-		@jsonProperty(String)
+	export class TableColumn /*extends Serializable*/ implements ITableColumn {
+		//@jsonProperty(String)
 		public name: string;
-		@jsonProperty(String)
+		//@jsonProperty(String)
 		public type: string;
-		@jsonProperty(Boolean)
+		//@jsonProperty(Boolean)
 		public isNullable: boolean;
-		@jsonProperty(Boolean)
+		//@jsonProperty(Boolean)
 		public isUnique: boolean;
-		@jsonProperty(Boolean)
-		public isAutoincremental: boolean;
-		@jsonProperty(String)
+		//@jsonProperty(Boolean)
+		public isAutoIncremental: boolean;
+		//@jsonProperty(String)
 		public defaultValue: string;
 
 		public CreateScript(command: string, properties: Property[]): string {
@@ -50,34 +50,34 @@ export namespace PGProvider {
 		public properties: Property[];
 
 		constructor(name: string, type: string) {
-			super();
+			//super();
 			this.name = name;
 			this.type = type;
 			this.isNullable = true;
 			this.isUnique = false;
-			this.isAutoincremental = false;
+			this.isAutoIncremental = false;
 			this.defaultValue = null;
 			this.properties = [];
 		}
 	}
 
-	export class ForeignKey extends Serializable implements IForeignKey {
-		@jsonProperty(String)
+	export class ForeignKey /*extends Serializable*/ implements IForeignKey {
+		//@jsonProperty(String)
 		public name: string;
-		@jsonProperty(String)
+		//@jsonProperty(String)
 		public columns: string[];
-		@jsonProperty(String)
+		//@jsonProperty(String)
 		public tableForeign: string;
-		@jsonProperty(String)
+		//@jsonProperty(String)
 		public columnsForeign: string[];
 		CreateScript(command: string, properties: IProperty[]): string {
 			throw new Error('Method not implemented.');
 		}
-		@jsonProperty(String)
+		//@jsonProperty(String)
 		public properties: Property[];
 
 		constructor(name: string, columns: string[], tableForeign: string, columnsForeign: string[]) {
-			super();
+			//super();
 			this.name = name;
 			this.columns = columns;
 			this.tableForeign = tableForeign;
@@ -86,18 +86,18 @@ export namespace PGProvider {
 		}
 	}
 
-	export class IndexColumn extends Serializable implements IIndexColumn {
+	export class IndexColumn /*extends Serializable*/ implements IIndexColumn {
 		public name: string;
 		public dir: DirOrder;
 
 		constructor(name: string, dir: DirOrder) {
-			super();
+			//super();
 			this.name = name;
 			this.dir = dir;
 		}
 	}
 
-	export class Index extends Serializable implements IIndex {
+	export class Index /*extends Serializable*/ implements IIndex {
 		public name: string;
 		public columns: IndexColumn[];
 		public kind: KindIndex;
@@ -110,7 +110,7 @@ export namespace PGProvider {
 		public properties: Property[];
 
 		constructor(name: string, columns: IndexColumn[]) {
-			super();
+			//super();
 			this.name = name;
 			this.columns = columns;
 			this.kind = KindIndex.None;
@@ -120,7 +120,7 @@ export namespace PGProvider {
 		}
 	}
 
-	export class View extends Serializable implements IView {
+	export class View /*extends Serializable*/ implements IView {
 		public name: string;
 		public schema: string;
 		public columns: TableColumn[];
@@ -132,7 +132,7 @@ export namespace PGProvider {
 		}
 
 		constructor(name: string, schema : string, columns: TableColumn[]) {
-			super();
+			//super();
 			this.name = name;
 			this.columns = columns;
 			this.indexes = [];
@@ -140,7 +140,7 @@ export namespace PGProvider {
 		}
 	}
 
-	export class Table extends Serializable implements ITable {
+	export class Table /*extends Serializable*/ implements ITable {
 		public name: string;
 		public schema: string;
 		public columns: TableColumn[];
@@ -153,7 +153,7 @@ export namespace PGProvider {
 		}
 
 		constructor(name: string, schema : string, columns: TableColumn[]) {
-			super();
+			//super();
 			this.name = name;
 			this.columns = columns;
 			this.indexes = [];
