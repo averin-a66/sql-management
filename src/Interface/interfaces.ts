@@ -3,7 +3,7 @@ import * as json from 'jsonc-parser';
 export namespace sqlProvider {
 
 	export interface IProperties {
-		[values: string] : string;
+		[values: string] : any;
 	}
 
 	export interface IHasProperties {
@@ -119,18 +119,68 @@ export namespace sqlProvider {
 		tableResult: IColumns;
 	}
 
-	export interface ISqlSchema {
+	export interface IViews {
+		[values: string] : IView;
+	}
+	export interface ITables {
+		[values: string] : ITable;
+	}
+
+	export interface IProcedures {
+		[values: string] : IProcedure;
+	}
+
+	export interface IAllFunctions {
+		[values: string] : IProgramObject;
+	}
+
+	export interface IScalarFunctions {
+		[values: string] : IScalarFunction;
+	}
+
+	export interface ITableFunctions {
+		[values: string] : ITableFunction;
+	}
+
+	export interface ISqlSchema extends IHasProperties {
 		nameSqlServer: string;
 		connection(connectionString: string): boolean;
 		getSchemaJSON(): string;
 		getSourceObject(name: string): string;
 
 		schemas: string[];
-		tables: ITable[];
-		views: IView[];
-		functions: IProgramObject[];
-		scalarFunctions: IScalarFunction[];
-		tableFunctions: ITableFunction[];
-		procedures: IProcedure[];
+		tables: ITables;
+		views: IViews;
+		functions: IAllFunctions;
+		scalarFunctions: IScalarFunctions;
+		tableFunctions: ITableFunctions;
+		procedures: IProcedures;
+	}
+
+	export enum kindObjectDB {
+		Table,
+		View,
+		Index,
+		ForeignKey,
+		Trigger,
+		Procedure,
+		Function,
+		UserType
+	}
+
+	export interface IDBDriver extends IHasProperties {
+		typeServer : string;
+		host : string;
+		port : number;
+		database : string;
+		user : string;
+		password : string;
+
+		connect();
+		disconnect();
+		getConnectionStr() : string;
+
+		listSqlObjects() : json.Node;
+
 	}
 }

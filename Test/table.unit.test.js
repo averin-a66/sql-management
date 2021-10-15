@@ -27,7 +27,6 @@ let TableColumnModuleTest = class TableColumnModuleTest {
         (0, chai_1.expect)(this.SUT.isNullable, 'isNullable').to.be.true;
         (0, chai_1.expect)(this.SUT.isUnique, 'isUnique').to.be.false;
         (0, chai_1.expect)(this.SUT.isAutoIncremental, 'isAutoIncremental').to.be.false;
-        (0, chai_1.expect)(this.SUT.properties.length).to.be.equal(1);
         (0, chai_1.expect)(this.SUT.properties['Comment']).to.be.equal('Primary key');
     }
 };

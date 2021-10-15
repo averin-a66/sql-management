@@ -28,7 +28,6 @@ _chai.expect;
     expect(this.SUT.isUnique, 'isUnique').to.be.false;
     expect(this.SUT.isAutoIncremental, 'isAutoIncremental').to.be.false;
 
-    expect(this.SUT.properties.length).to.be.equal(1);
     expect(this.SUT.properties['Comment']).to.be.equal('Primary key');
   }
 }

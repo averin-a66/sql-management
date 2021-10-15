@@ -1,19 +1,19 @@
 import { off } from 'process';
 //import { jsonProperty, Serializable } from "ts-serializable";
-import * as sqlSchema from '../Interface/interfaces';
+import * as Interfaces from '../Interface/interfaces';
 
-import IProperties = sqlSchema.sqlProvider.IProperties;
-import ITableColumn = sqlSchema.sqlProvider.ITableColumn;
-import IForeignKey = sqlSchema.sqlProvider.IForeignKey;
-import IIndexColumn = sqlSchema.sqlProvider.IIndexColumn;
-import DirOrder = sqlSchema.sqlProvider.DirOrder;
-import IIndex = sqlSchema.sqlProvider.IIndex;
-import KindIndex = sqlSchema.sqlProvider.KindIndex;
-import IView = sqlSchema.sqlProvider.IView;
-import ITable = sqlSchema.sqlProvider.ITable;
-import IColumns = sqlSchema.sqlProvider.IColumns;
-import IIndexes = sqlSchema.sqlProvider.IIndexes;
-import IForeignKeys = sqlSchema.sqlProvider.IForeignKeys;
+import IProperties = Interfaces.sqlProvider.IProperties;
+import ITableColumn = Interfaces.sqlProvider.ITableColumn;
+import IForeignKey = Interfaces.sqlProvider.IForeignKey;
+import IIndexColumn = Interfaces.sqlProvider.IIndexColumn;
+import DirOrder = Interfaces.sqlProvider.DirOrder;
+import IIndex = Interfaces.sqlProvider.IIndex;
+import KindIndex = Interfaces.sqlProvider.KindIndex;
+import IView = Interfaces.sqlProvider.IView;
+import ITable = Interfaces.sqlProvider.ITable;
+import IColumns = Interfaces.sqlProvider.IColumns;
+import IIndexes = Interfaces.sqlProvider.IIndexes;
+import IForeignKeys = Interfaces.sqlProvider.IForeignKeys;
 
 export namespace PGProvider {
 
