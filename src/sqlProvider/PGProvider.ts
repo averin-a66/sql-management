@@ -14,6 +14,9 @@ import ITable = Interfaces.sqlProvider.ITable;
 import IColumns = Interfaces.sqlProvider.IColumns;
 import IIndexes = Interfaces.sqlProvider.IIndexes;
 import IForeignKeys = Interfaces.sqlProvider.IForeignKeys;
+import ITables =Interfaces.sqlProvider.ITables;
+import IViews =Interfaces.sqlProvider.IViews;
+import ISqlSchema = Interfaces.sqlProvider.ISqlSchema;
 
 export namespace PGProvider {
 
@@ -150,10 +153,32 @@ export namespace PGProvider {
 
 		constructor(name: string, schema : string, columns: IColumns) {
 			//super();
+			this.schema = schema;
 			this.name = name;
 			this.columns = columns;
 			this.indexes = {};
 			this.foreignKeys = {};
+			this.properties = {};
+		}
+	}
+
+	export class SqlSchema implements ISqlSchema  {
+		public nameSqlServer: string;
+		public schemas: string[];
+		public tables: ITables;
+		public views: IViews;
+		public properties: IProperties;
+
+		getSchemaJSON(): string {
+			throw new Error('Method not implemented.');
+		}
+		getSourceObject(name: string): string {
+			throw new Error('Method not implemented.');
+		}
+
+		constructor(name: string) {
+			//super();
+			this.nameSqlServer = name;
 			this.properties = {};
 		}
 	}

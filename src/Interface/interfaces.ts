@@ -70,7 +70,7 @@ export namespace sqlProvider {
 
 	export interface IView extends IDDL, IDbObject, IHasProperties {
 		columns: IColumns;
-		indexes: IIndexes;
+		indexes?: IIndexes;
 	}
 
 	export interface IForeignKeys {
@@ -78,7 +78,7 @@ export namespace sqlProvider {
 	}
 
 	export interface ITable extends IView {
-		foreignKeys: IForeignKeys;
+		foreignKeys?: IForeignKeys;
 	}
 
 	export enum KindProgramObject {
@@ -144,17 +144,16 @@ export namespace sqlProvider {
 
 	export interface ISqlSchema extends IHasProperties {
 		nameSqlServer: string;
-		connection(connectionString: string): boolean;
 		getSchemaJSON(): string;
 		getSourceObject(name: string): string;
 
 		schemas: string[];
 		tables: ITables;
 		views: IViews;
-		functions: IAllFunctions;
-		scalarFunctions: IScalarFunctions;
-		tableFunctions: ITableFunctions;
-		procedures: IProcedures;
+		//functions: IAllFunctions;
+		//scalarFunctions: IScalarFunctions;
+		//tableFunctions: ITableFunctions;
+		//procedures: IProcedures;
 	}
 
 	export enum kindObjectDB {
@@ -180,7 +179,7 @@ export namespace sqlProvider {
 		disconnect();
 		getConnectionStr() : string;
 
-		listSqlObjects() : json.Node;
+		listSqlObjects(): Promise<ISqlSchema>;
 
 	}
 }
