@@ -7,10 +7,12 @@ import PG = pgDrv.PGDriver.DBDriver;
 
 export namespace dbgPGProvider {
 
-	export function debugTableColumn() {
+	export async function debugTableColumn() : Promise<pgPrv.PGProvider.DBNode> {
 		const pg = new PG();
 		pg.database = 'Test';
 		pg.password = 'Bdfysx1966';
-		const tree = pg.listSqlObjects();
+		const tree = await pg.TreeDB();
+
+		return tree;
 	}
 }

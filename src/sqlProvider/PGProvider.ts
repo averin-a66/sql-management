@@ -14,9 +14,12 @@ import ITable = Interfaces.sqlProvider.ITable;
 import IColumns = Interfaces.sqlProvider.IColumns;
 import IIndexes = Interfaces.sqlProvider.IIndexes;
 import IForeignKeys = Interfaces.sqlProvider.IForeignKeys;
-import ITables =Interfaces.sqlProvider.ITables;
-import IViews =Interfaces.sqlProvider.IViews;
+import ITables = Interfaces.sqlProvider.ITables;
+import IViews = Interfaces.sqlProvider.IViews;
 import ISqlSchema = Interfaces.sqlProvider.ISqlSchema;
+import IDBNode = Interfaces.sqlProvider.IDBNode;
+
+import kindObjectDB = Interfaces.sqlProvider.kindObjectDB;
 
 export namespace PGProvider {
 
@@ -38,9 +41,9 @@ export namespace PGProvider {
 		//@jsonProperty(String)
 		public defaultValue: string;
 
-		public CreateScript(command: string, properties: Properties): string {
+		public CreateScript(command: string, properties?: Properties): string {
 			switch (command) {
-				case 'create': return `${this.name} ${this.type} `+this.isNullable? ' null': ' not null';
+				case 'create': return `${this.name} ${this.type} ` + this.isNullable ? ' null' : ' not null';
 				case 'select':
 					return `${this.name}`;
 				default: return `${this.name}`;
@@ -69,7 +72,7 @@ export namespace PGProvider {
 		public tableForeign: string;
 		//@jsonProperty(String)
 		public columnsForeign: string[];
-		CreateScript(command: string, properties: IProperties): string {
+		CreateScript(command: string, properties?: IProperties): string {
 			throw new Error('Method not implemented.');
 		}
 		//@jsonProperty(String)
@@ -103,7 +106,7 @@ export namespace PGProvider {
 		public isCluster: boolean;
 		public fillFactor: number;
 
-		CreateScript(command: string, properties: IProperties): string {
+		CreateScript(command: string, properties?: IProperties): string {
 			throw new Error('Method not implemented.');
 		}
 		public properties: Properties;
@@ -126,16 +129,22 @@ export namespace PGProvider {
 		columns: IColumns;
 		indexes: IIndexes;
 
-		CreateScript(command: string, properties: IProperties): string {
+		CreateScript(command: string, properties?: IProperties): string {
 			throw new Error('Method not implemented.');
 		}
 
-		constructor(name: string, schema : string, columns: IColumns) {
+		constructor(name: string, schema: string, columns: IColumns) {
 			//super();
 			this.name = name;
 			this.columns = columns;
 			this.indexes = {};
 			this.properties = {};
+		}
+
+		toDBTree(): IDBNode {
+			const tree = new DBNode(kindObjectDB.View, false, this.name);
+			tree.value = this;
+			return tree;
 		}
 	}
 
@@ -147,11 +156,16 @@ export namespace PGProvider {
 		public foreignKeys: IForeignKeys;
 		public properties: Properties;
 
-		CreateScript(command: string, properties: IProperties): string {
-			throw new Error('Method not implemented.');
+		CreateScript(command: string, properties?: IProperties): string {
+			if (properties !== undefined && properties['typeResultFile'] === 'json') {
+				return JSON.stringify(this, undefined, ' ');
+			}
+			else {
+				return '';
+			}
 		}
 
-		constructor(name: string, schema : string, columns: IColumns) {
+		constructor(name: string, schema: string, columns: IColumns) {
 			//super();
 			this.schema = schema;
 			this.name = name;
@@ -160,9 +174,33 @@ export namespace PGProvider {
 			this.foreignKeys = {};
 			this.properties = {};
 		}
+
+        toJSON() : string {
+			return '{}';
+		}
+
+		toDBTree(): IDBNode {
+			const tree = new DBNode(kindObjectDB.Table, false, this.name);
+			tree.children = [
+				new DBNode(kindObjectDB.Column, true, 'Поля'),
+				new DBNode(kindObjectDB.Column, true, 'Внешние ключи'),
+				new DBNode(kindObjectDB.Column, true, 'Индексы'),
+				new DBNode(kindObjectDB.Column, true, 'Проверки'),
+				new DBNode(kindObjectDB.Column, true, 'Триггеры'),
+			];
+
+			tree.value = this;
+			tree.children[0].children = Array<DBNode>();
+			let i = 0;
+			Object.keys(this.columns).forEach(key => {
+				tree.children[0].children[i++] = new DBNode(kindObjectDB.Column, false, key);
+			});
+
+			return tree;
+		}
 	}
 
-	export class SqlSchema implements ISqlSchema  {
+	export class SqlSchema implements ISqlSchema {
 		public nameSqlServer: string;
 		public schemas: string[];
 		public tables: ITables;
@@ -180,6 +218,14 @@ export namespace PGProvider {
 			//super();
 			this.nameSqlServer = name;
 			this.properties = {};
+		}
+	}
+	export class DBNode implements IDBNode {
+		public children: DBNode[] | undefined;
+		public value: any | undefined;
+		constructor(public kind: kindObjectDB, public isFolder: boolean, public name: string) {
+			this.children = undefined;
+			this.value = undefined;
 		}
 	}
 }

@@ -72,18 +72,18 @@
 			"view/title": [
 				{
 					"command": "sqlManagement.refresh",
-					"when": "view == sqlManagement",
+					"when": "view == sqlManagement && viewItem == DataBase_folder",
 					"group": "navigation"
 				}
 			],
 			"view/item/context": [
 				{
 					"command": "sqlManagement.renameNode",
-					"when": "view == sqlManagement"
+					"when": "view == sqlManagement && viewItem == DataBase_folder"
 				},
 				{
 					"command": "sqlManagement.refreshNode",
-					"when": "view == sqlManagement",
+					"when": "view == sqlManagement && viewItem == Table",
 					"group": "inline"
 				}
 			]
@@ -95,6 +95,23 @@
 					"sqlManagement.autoRefresh": {
 						"type": "boolean",
 						"default": false
+					},
+					"connect.host": {
+						"type": "string",
+						"default": "localhost"
+					},
+					"connect.dataBase": {
+						"type": "string",
+						"default": "Test"
+					},
+					"connect.user": {
+						"type": "string",
+						"default": "postgres"
+					}
+					,
+					"connect.password": {
+						"type": "string",
+						"default": "Bdfysx1966"
 					}
 				}
 			}

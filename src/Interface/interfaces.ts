@@ -2,6 +2,18 @@ import * as json from 'jsonc-parser';
 
 export namespace sqlProvider {
 
+	export interface IDBNode {
+		children : IDBNode[] | undefined;
+		value : any | undefined;
+		kind : kindObjectDB;
+		isFolder : boolean;
+		name : string;
+	}
+
+	export interface ItoDBTree {
+		toDBTree() : IDBNode;
+	}
+
 	export interface IProperties {
 		[values: string] : any;
 	}
@@ -11,7 +23,7 @@ export namespace sqlProvider {
 	}
 
 	export interface IDDL {
-		CreateScript(command: string, properties: IProperties): string;
+		CreateScript(command: string, properties?: IProperties): string;
 	}
 
 	export interface IDbObject {
@@ -68,7 +80,7 @@ export namespace sqlProvider {
 		[values: string] : ITableColumn;
 	}
 
-	export interface IView extends IDDL, IDbObject, IHasProperties {
+	export interface IView extends IDDL, IDbObject, IHasProperties, ItoDBTree {
 		columns: IColumns;
 		indexes?: IIndexes;
 	}
@@ -157,6 +169,8 @@ export namespace sqlProvider {
 	}
 
 	export enum kindObjectDB {
+		DataBases,
+		DataBase,
 		Table,
 		View,
 		Index,
@@ -164,7 +178,11 @@ export namespace sqlProvider {
 		Trigger,
 		Procedure,
 		Function,
-		UserType
+		Rule,
+		Check,
+		UserType,
+		Users,
+		Column
 	}
 
 	export interface IDBDriver extends IHasProperties {
@@ -182,4 +200,6 @@ export namespace sqlProvider {
 		listSqlObjects(): Promise<ISqlSchema>;
 
 	}
+
+	
 }
