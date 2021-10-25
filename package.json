@@ -55,6 +55,14 @@
 				}
 			},
 			{
+				"command": "sqlManagement.refreshDB",
+				"title": "Refresh",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
 				"command": "sqlManagement.refreshNode",
 				"title": "Refresh",
 				"icon": {
@@ -79,11 +87,16 @@
 			"view/item/context": [
 				{
 					"command": "sqlManagement.renameNode",
-					"when": "view == sqlManagement && viewItem == DataBase_folder"
+					"when": "view == sqlManagement && viewItem == DataBase"
 				},
 				{
 					"command": "sqlManagement.refreshNode",
 					"when": "view == sqlManagement && viewItem == Table",
+					"group": "inline"
+				},
+				{
+					"command": "sqlManagement.refreshDB",
+					"when": "view == sqlManagement && viewItem == DataBase",
 					"group": "inline"
 				}
 			]
@@ -95,23 +108,6 @@
 					"sqlManagement.autoRefresh": {
 						"type": "boolean",
 						"default": false
-					},
-					"connect.host": {
-						"type": "string",
-						"default": "localhost"
-					},
-					"connect.dataBase": {
-						"type": "string",
-						"default": "Test"
-					},
-					"connect.user": {
-						"type": "string",
-						"default": "postgres"
-					}
-					,
-					"connect.password": {
-						"type": "string",
-						"default": "Bdfysx1966"
 					}
 				}
 			}

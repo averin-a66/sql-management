@@ -1,6 +1,7 @@
 import { off } from 'process';
 //import { jsonProperty, Serializable } from "ts-serializable";
 import * as Interfaces from '../Interface/interfaces';
+import * as Utils from '../Utils/Utils';
 
 import IProperties = Interfaces.sqlProvider.IProperties;
 import ITableColumn = Interfaces.sqlProvider.ITableColumn;
@@ -18,6 +19,7 @@ import ITables = Interfaces.sqlProvider.ITables;
 import IViews = Interfaces.sqlProvider.IViews;
 import ISqlSchema = Interfaces.sqlProvider.ISqlSchema;
 import IDBNode = Interfaces.sqlProvider.IDBNode;
+import factorySqlDriver = Interfaces.sqlProvider.factorySqlDriver;
 
 import kindObjectDB = Interfaces.sqlProvider.kindObjectDB;
 
@@ -157,8 +159,8 @@ export namespace PGProvider {
 		public properties: Properties;
 
 		CreateScript(command: string, properties?: IProperties): string {
-			if (properties !== undefined && properties['typeResultFile'] === 'json') {
-				return JSON.stringify(this, undefined, ' ');
+			if (properties !== undefined && properties.typeResultFile === 'json') {
+				return this.toJson();
 			}
 			else {
 				return '';
@@ -175,8 +177,14 @@ export namespace PGProvider {
 			this.properties = {};
 		}
 
-        toJSON() : string {
-			return '{}';
+        private toJson() : string {
+			const json = JSON.parse(JSON.stringify(this, ['name','schema']));
+			json.columns = Utils.sqlProvider.indexesToArray<TableColumn>(this.columns);
+			json.indexes = Utils.sqlProvider.indexesToArray<Index>(this.indexes);
+			json.foreignKeys = Utils.sqlProvider.indexesToArray<ForeignKey>(this.foreignKeys);
+
+			json.properties = Utils.sqlProvider.indexesToArray<any>(this.properties);
+			return JSON.stringify(json, null, '  ');
 		}
 
 		toDBTree(): IDBNode {
@@ -202,6 +210,7 @@ export namespace PGProvider {
 
 	export class SqlSchema implements ISqlSchema {
 		public nameSqlServer: string;
+		public initialized : boolean;
 		public schemas: string[];
 		public tables: ITables;
 		public views: IViews;
@@ -214,10 +223,18 @@ export namespace PGProvider {
 			throw new Error('Method not implemented.');
 		}
 
-		constructor(name: string) {
+		constructor(name: string, cfg?: any ) {
 			//super();
 			this.nameSqlServer = name;
-			this.properties = {};
+			this.properties = { host: "localhost", post: 5432, database:"", user: "postgres", password:""};
+			if(cfg !== undefined) {
+				this.properties.host = cfg.host;
+				this.properties.database = cfg.dataBase;
+				this.properties.user = cfg.user;
+				this.properties.password = cfg.password;
+			}
+
+			this.initialized=false;
 		}
 	}
 	export class DBNode implements IDBNode {

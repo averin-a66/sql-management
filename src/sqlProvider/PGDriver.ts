@@ -12,6 +12,7 @@ import IViews = Interfaces.sqlProvider.ITables;
 import IColumns = Interfaces.sqlProvider.IColumns;
 import IIndexes = Interfaces.sqlProvider.IIndexes;
 import kindObjectDB = Interfaces.sqlProvider.kindObjectDB;
+import IDBNode = Interfaces.sqlProvider.IDBNode;
 import ItoDBTree = Interfaces.sqlProvider.ItoDBTree;
 
 import Table = PGProvider.PGProvider.Table;
@@ -33,14 +34,23 @@ export namespace PGDriver {
 		static pool: Pool = undefined;
 		private DBTree: json.Node;
 
-		constructor() {
-			this.host = 'localhost';
-			this.port = 5432;
-			this.user = 'postgres';
+		constructor(config?: any) {
 			this.typeServer = 'PostgreSql';
+			if (config === undefined) {
+				this.host = 'localhost';
+				this.port = 5432;
+				this.user = 'postgres';
+			}
+			else {
+				this.host = config.host;
+				this.database = config.dataBase;
+				this.user = config.user;
+				this.password = config.password;
+			}
+
 			this.properties = {};
-			this.properties['idleTimeoutMs'] = 30000;
-			this.properties['connectionTimeoutMs'] = 12000;
+			this.properties.idleTimeoutMs = 30000;
+			this.properties.connectionTimeoutMs = 12000;
 		}
 
 		public getPool(): Pool {
@@ -169,15 +179,17 @@ export namespace PGDriver {
 			return result;
 		}
 
-		public async TreeDB(): Promise<DBNode> {
-			const tree = this.createStartTreeDB();
+		public async TreeDB(node: IDBNode): Promise<DBNode> {
+			const tree = this.createStartTreeDB(node);
 			const chm: ISqlSchema = await this.listSqlObjects();
 
-			for (let i = 0; i < tree.children.length; i++) {
+			this.insertObjectsToTreeDB(tree.children[PgIndexFolder.Table], chm.tables);
+			this.insertObjectsToTreeDB(tree.children[PgIndexFolder.View], chm.views);
+			/*for (let i = 0; i < tree.children.length; i++) {
 				const treeDb = tree.children[i];
 				this.insertObjectsToTreeDB(treeDb.children[PgIndexFolder.Table], chm.tables);
 				this.insertObjectsToTreeDB(treeDb.children[PgIndexFolder.View], chm.views);
-			}
+			}*/
 
 			return tree;
 		}
@@ -190,12 +202,8 @@ export namespace PGDriver {
 			}
 		}
 
-		public createStartTreeDB(): DBNode {
-			const treeDb = new DBNode(kindObjectDB.DataBases, true, 'Сервера');
-			treeDb.children = [
-				new DBNode(kindObjectDB.DataBase, true, this.host + ' ' + this.database)
-			];
-			treeDb.children[0].children = [
+		public createStartTreeDB(node: IDBNode): DBNode {
+			node.children = [
 				new DBNode(kindObjectDB.Table, true, 'Таблицы'),
 				new DBNode(kindObjectDB.View, true, 'Представления'),
 				new DBNode(kindObjectDB.Procedure, true, 'Процедуры'),
@@ -204,7 +212,7 @@ export namespace PGDriver {
 				new DBNode(kindObjectDB.Rule, true, 'Правила'),
 				new DBNode(kindObjectDB.Index, true, 'Индексы')
 			];
-			return treeDb;
+			return node;
 		}
 	}
 

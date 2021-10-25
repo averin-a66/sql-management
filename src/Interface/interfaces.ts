@@ -154,8 +154,10 @@ export namespace sqlProvider {
 		[values: string] : ITableFunction;
 	}
 
+	export type factorySqlDriver = () => IDBDriver;
 	export interface ISqlSchema extends IHasProperties {
 		nameSqlServer: string;
+		initialized : boolean
 		getSchemaJSON(): string;
 		getSourceObject(name: string): string;
 

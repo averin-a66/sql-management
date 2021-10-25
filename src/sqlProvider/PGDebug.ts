@@ -11,7 +11,7 @@ export namespace dbgPGProvider {
 		const pg = new PG();
 		pg.database = 'Test';
 		pg.password = 'Bdfysx1966';
-		const tree = await pg.TreeDB();
+		const tree = await pg.TreeDB(undefined);
 
 		return tree;
 	}
