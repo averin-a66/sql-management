@@ -1,5 +1,4 @@
 import * as json from 'jsonc-parser';
-//import {findNodeAtLocation} from 'jsonc-parser';
 import { Pool, QueryResult, Client } from 'pg';
 import * as Interfaces from '../Interface/interfaces';
 import * as PGProvider from '../sqlProvider/PGProvider';
@@ -179,40 +178,35 @@ export namespace PGDriver {
 			return result;
 		}
 
-		public async TreeDB(node: IDBNode): Promise<DBNode> {
-			const tree = this.createStartTreeDB(node);
+		public async TreeDB(nodeDB: IDBNode): Promise<DBNode> {
+			const tree = this.createStartTreeDB(nodeDB);
 			const chm: ISqlSchema = await this.listSqlObjects();
 
-			this.insertObjectsToTreeDB(tree.children[PgIndexFolder.Table], chm.tables);
-			this.insertObjectsToTreeDB(tree.children[PgIndexFolder.View], chm.views);
-			/*for (let i = 0; i < tree.children.length; i++) {
-				const treeDb = tree.children[i];
-				this.insertObjectsToTreeDB(treeDb.children[PgIndexFolder.Table], chm.tables);
-				this.insertObjectsToTreeDB(treeDb.children[PgIndexFolder.View], chm.views);
-			}*/
+			this.insertObjectsToTreeDB(tree.children[PgIndexFolder.Table], chm.tables, nodeDB);
+			this.insertObjectsToTreeDB(tree.children[PgIndexFolder.View], chm.views, nodeDB);
 
 			return tree;
 		}
 
-		private insertObjectsToTreeDB(nodeObject: DBNode, schObjects: IProperties): void {
+		private insertObjectsToTreeDB(nodeObject: DBNode, schObjects: IProperties, nodeDB: DBNode ): void {
 			nodeObject.children = Array<DBNode>();
 			let i = 0;
 			for (const key in schObjects) {
-				nodeObject.children[i++] = schObjects[key].toDBTree();
+				nodeObject.children[i++] = schObjects[key].toDBTree(nodeDB);
 			}
 		}
 
-		public createStartTreeDB(node: IDBNode): DBNode {
-			node.children = [
-				new DBNode(kindObjectDB.Table, true, 'Таблицы'),
-				new DBNode(kindObjectDB.View, true, 'Представления'),
-				new DBNode(kindObjectDB.Procedure, true, 'Процедуры'),
-				new DBNode(kindObjectDB.Function, true, 'Функции'),
-				new DBNode(kindObjectDB.Trigger, true, 'Триггеры'),
-				new DBNode(kindObjectDB.Rule, true, 'Правила'),
-				new DBNode(kindObjectDB.Index, true, 'Индексы')
+		public createStartTreeDB(nodeDB: IDBNode): DBNode {
+			nodeDB.children = [
+				new DBNode(kindObjectDB.Table, true, 'Таблицы', nodeDB),
+				new DBNode(kindObjectDB.View, true, 'Представления', nodeDB),
+				new DBNode(kindObjectDB.Procedure, true, 'Процедуры', nodeDB),
+				new DBNode(kindObjectDB.Function, true, 'Функции', nodeDB),
+				new DBNode(kindObjectDB.Trigger, true, 'Триггеры', nodeDB),
+				new DBNode(kindObjectDB.Rule, true, 'Правила', nodeDB),
+				new DBNode(kindObjectDB.Index, true, 'Индексы', nodeDB)
 			];
-			return node;
+			return nodeDB;
 		}
 	}
 

@@ -4,6 +4,7 @@ export namespace sqlProvider {
 
 	export interface IDBNode {
 		children : IDBNode[] | undefined;
+		rootDB : IDBNode | undefined;
 		value : any | undefined;
 		kind : kindObjectDB;
 		isFolder : boolean;
@@ -11,7 +12,7 @@ export namespace sqlProvider {
 	}
 
 	export interface ItoDBTree {
-		toDBTree() : IDBNode;
+		toDBTree(nodeDB : IDBNode) : IDBNode;
 	}
 
 	export interface IProperties {

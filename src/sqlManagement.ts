@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as ts from "typescript";
 import * as vscode from 'vscode';
 import * as json from 'jsonc-parser';
@@ -6,14 +7,17 @@ import * as pgPrv from './sqlProvider/PGProvider';
 import * as Interfaces from './Interface/interfaces';
 import * as pgDrv from './sqlProvider/PGDriver';
 import PG = pgDrv.PGDriver.DBDriver;
-import * as Config from './Config/Config.json';
+import * as fileExplorer from './Utils/fileExplorer';
+
 
 import IDBNode = Interfaces.sqlProvider.IDBNode;
+import ITable = Interfaces.sqlProvider.ITable;
 import kindObjectDB = Interfaces.sqlProvider.kindObjectDB;
 import factorySqlDriver = Interfaces.sqlProvider.factorySqlDriver;
 import IDDL = Interfaces.sqlProvider.IDDL;
 import Properties = pgPrv.PGProvider.Properties;
 import DBNode = pgPrv.PGProvider.DBNode;
+import FileSystem = fileExplorer.FileSystem;
 
 export class SqlManagementProvider implements vscode.TreeDataProvider<IDBNode> {
 
@@ -22,7 +26,7 @@ export class SqlManagementProvider implements vscode.TreeDataProvider<IDBNode> {
 
 	private tree: IDBNode;
 	private autoRefresh = true;
-	public factoryDrv = (config : any) => {
+	public factoryDrv = (config: any) => {
 		return new PG(config);
 	}
 
@@ -32,19 +36,40 @@ export class SqlManagementProvider implements vscode.TreeDataProvider<IDBNode> {
 			this.autoRefresh = vscode.workspace.getConfiguration('sqlManagement').get('autoRefresh');
 		});
 
-		this.parseConfig().catch( (err) => { console.error(err); });
+		this.parseConfig().catch((err) => { console.error(err); });
 	}
 
 	public async refreshDB(nodeDB?: IDBNode): Promise<void> {
 		await nodeDB.value.TreeDB(nodeDB);
 	}
 
+	private get fileConfig(): string {
+		return vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'Config', 'Config.json').fsPath;
+	}
+
+	private async getFileCacheUri(nameFile: string, obj: IDBNode): Promise<vscode.Uri> {
+		const cacheDbUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'Cache', obj.rootDB.name);
+
+		if (FileSystem.exists(cacheDbUri)) {
+			await FileSystem.createDirectory(cacheDbUri);
+		}
+		if (!FileSystem.exists(cacheDbUri)) {
+				return undefined;
+		}
+
+		return vscode.Uri.joinPath(cacheDbUri, nameFile);
+	}
+
 	private async parseConfig(): Promise<void> {
 		this.tree = new DBNode(kindObjectDB.DataBases, true, 'Сервера');
 		this.tree.children = Array<DBNode>();
+
+		const p = this.fileConfig; //vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'Config', 'Config.json').fsPath;
+		const json = fs.readFileSync(p).toString();
+		const config = JSON.parse(json);
 		let i = 0;
-		Config.connections.forEach(cfg => {
-			const srv : DBNode = new DBNode(kindObjectDB.DataBase, false, cfg.name === '' ? cfg.host + ' ' + cfg.dataBase: cfg.name);
+		config.connections.forEach(cfg => {
+			const srv: DBNode = new DBNode(kindObjectDB.DataBase, false, cfg.name === '' ? cfg.host + '-' + cfg.dataBase : cfg.name);
 			srv.value = this.factoryDrv(cfg);
 			this.tree.children[i++] = srv;
 		});
@@ -52,11 +77,11 @@ export class SqlManagementProvider implements vscode.TreeDataProvider<IDBNode> {
 
 	getChildren(node?: IDBNode): Thenable<IDBNode[]> {
 		if (node) {
-			if(node.kind == kindObjectDB.DataBase && node.children===undefined) {
+			if (node.kind == kindObjectDB.DataBase && node.children === undefined) {
 
-				node.value.TreeDB(node).then((n)=> {
+				node.value.TreeDB(node).then((n) => {
 					this._onDidChangeTreeData.fire(node);
-					return Promise.resolve(node.children); 
+					return Promise.resolve(node.children);
 				});
 			}
 			return Promise.resolve(node.children);
@@ -106,11 +131,11 @@ export class SqlManagementProvider implements vscode.TreeDataProvider<IDBNode> {
 		return null;
 	}
 
-	public async select(sqlObject: IDBNode) : Promise<void> {
+	public async select(sqlObject: IDBNode): Promise<void> {
 
-		if(sqlObject.kind === kindObjectDB.DataBase) {
+		if (sqlObject.kind === kindObjectDB.DataBase) {
 			console.log('select database');
-			if(sqlObject.children === undefined) {
+			if (sqlObject.children === undefined) {
 				await sqlObject.value.TreeDB(sqlObject);
 			}
 			return;
@@ -119,8 +144,23 @@ export class SqlManagementProvider implements vscode.TreeDataProvider<IDBNode> {
 		const ddlObj = sqlObject.value as IDDL;
 		if (ddlObj === undefined) {
 			console.log('select');
-			return; 
+			return;
 		}
-		const str = ddlObj.CreateScript(sqlObject.name, {typeResultFile:'json'});
+		await this.openTable(sqlObject);
+	}
+
+	private async openTable(table: IDBNode): Promise<void> {
+
+		const nameFile = await this.getFileCacheUri(`${table.name}.tbljson`, table);
+		if (nameFile) {
+			const str : string = table.value.CreateScript('FOR_EDIT', { typeResultFile: 'json' });
+			try {
+				await FileSystem.writeFile(nameFile, str, {create: true, overwrite:true});
+				vscode.window.showTextDocument(nameFile);
+			}
+			catch (e) {
+				console.error(e);
+			}
+		}
 	}
 }

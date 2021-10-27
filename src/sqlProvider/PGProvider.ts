@@ -1,5 +1,3 @@
-import { off } from 'process';
-//import { jsonProperty, Serializable } from "ts-serializable";
 import * as Interfaces from '../Interface/interfaces';
 import * as Utils from '../Utils/Utils';
 
@@ -143,8 +141,8 @@ export namespace PGProvider {
 			this.properties = {};
 		}
 
-		toDBTree(): IDBNode {
-			const tree = new DBNode(kindObjectDB.View, false, this.name);
+		toDBTree(nodeDB : IDBNode): IDBNode {
+			const tree = new DBNode(kindObjectDB.View, false, this.name, nodeDB);
 			tree.value = this;
 			return tree;
 		}
@@ -159,7 +157,7 @@ export namespace PGProvider {
 		public properties: Properties;
 
 		CreateScript(command: string, properties?: IProperties): string {
-			if (properties !== undefined && properties.typeResultFile === 'json') {
+			if (command === 'FOR_EDIT' && properties && properties.typeResultFile === 'json') {
 				return this.toJson();
 			}
 			else {
@@ -187,21 +185,21 @@ export namespace PGProvider {
 			return JSON.stringify(json, null, '  ');
 		}
 
-		toDBTree(): IDBNode {
-			const tree = new DBNode(kindObjectDB.Table, false, this.name);
+		toDBTree(nodeDB : IDBNode): IDBNode {
+			const tree = new DBNode(kindObjectDB.Table, false, this.name, nodeDB);
 			tree.children = [
-				new DBNode(kindObjectDB.Column, true, 'Поля'),
-				new DBNode(kindObjectDB.Column, true, 'Внешние ключи'),
-				new DBNode(kindObjectDB.Column, true, 'Индексы'),
-				new DBNode(kindObjectDB.Column, true, 'Проверки'),
-				new DBNode(kindObjectDB.Column, true, 'Триггеры'),
+				new DBNode(kindObjectDB.Column, true, 'Поля', nodeDB),
+				new DBNode(kindObjectDB.Column, true, 'Внешние ключи', nodeDB),
+				new DBNode(kindObjectDB.Column, true, 'Индексы', nodeDB),
+				new DBNode(kindObjectDB.Column, true, 'Проверки', nodeDB),
+				new DBNode(kindObjectDB.Column, true, 'Триггеры', nodeDB),
 			];
 
 			tree.value = this;
 			tree.children[0].children = Array<DBNode>();
 			let i = 0;
 			Object.keys(this.columns).forEach(key => {
-				tree.children[0].children[i++] = new DBNode(kindObjectDB.Column, false, key);
+				tree.children[0].children[i++] = new DBNode(kindObjectDB.Column, false, key, nodeDB);
 			});
 
 			return tree;
@@ -239,10 +237,12 @@ export namespace PGProvider {
 	}
 	export class DBNode implements IDBNode {
 		public children: DBNode[] | undefined;
+		public rootDB : IDBNode | undefined;
 		public value: any | undefined;
-		constructor(public kind: kindObjectDB, public isFolder: boolean, public name: string) {
+		constructor(public kind: kindObjectDB, public isFolder: boolean, public name: string, rootDB : IDBNode=undefined) {
 			this.children = undefined;
 			this.value = undefined;
+			this.rootDB = rootDB;
 		}
 	}
 }

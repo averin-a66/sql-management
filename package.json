@@ -73,6 +73,30 @@
 			{
 				"command": "sqlManagement.renameNode",
 				"title": "Rename"
+			},
+			{
+				"command": "sqlManagement.addTable",
+				"title": "Новая таблица"
+			},
+			{
+				"command": "sqlManagement.deleteTable",
+				"title": "Удалить таблицу"
+			},
+			{
+				"command": "sqlManagement.renameTable",
+				"title": "Переименовать таблицу",
+				"icon": {
+					"light": "resources/light/edit.svg",
+					"dark": "resources/dark/edit.svg"
+				}
+			},
+			{
+				"command": "sqlManagement.selectTable",
+				"title": "Открыть таблицу",
+				"icon": {
+					"light": "resources/light/edit.svg",
+					"dark": "resources/dark/edit.svg"
+				}
 			}
 		],
 		"menus": {
@@ -90,14 +114,31 @@
 					"when": "view == sqlManagement && viewItem == DataBase"
 				},
 				{
+					"command": "sqlManagement.refreshDB",
+					"when": "view == sqlManagement && viewItem == DataBase",
+					"group": "inline"
+				},
+				{
 					"command": "sqlManagement.refreshNode",
 					"when": "view == sqlManagement && viewItem == Table",
 					"group": "inline"
 				},
 				{
-					"command": "sqlManagement.refreshDB",
-					"when": "view == sqlManagement && viewItem == DataBase",
+					"command": "sqlManagement.selectTable",
+					"when": "view == sqlManagement && viewItem == Table",
 					"group": "inline"
+				},
+				{
+					"command": "sqlManagement.addTable",
+					"when": "view == sqlManagement && viewItem == Table"
+				},
+				{
+					"command": "sqlManagement.deleteTable",
+					"when": "view == sqlManagement && viewItem == Table"
+				},
+				{
+					"command": "sqlManagement.renameTable",
+					"when": "view == sqlManagement && viewItem == Table"
 				}
 			]
 		},
