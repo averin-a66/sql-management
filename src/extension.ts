@@ -1,7 +1,6 @@
 'use strict';
 
 import * as vscode from 'vscode';
-
 import { SqlManagementProvider } from './sqlManagement';
 
 export function activate(context: vscode.ExtensionContext) {

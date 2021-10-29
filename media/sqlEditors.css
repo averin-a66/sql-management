@@ -1,0 +1,151 @@
+.container {
+	width: 100%;
+	height: calc( 100vh - 70px );
+	padding: 20px 5px;
+	margin: 0 0;
+	display: block;
+}
+
+#tabs, #tabs-title  { 
+	padding: 0px;
+	margin: 0px; 
+	clear: both; 
+	width: 100%;
+	border: 1px solid #000;
+	height: 100%;
+}
+
+.tab-title { 
+	cursor: pointer; 
+	margin: 0px 0px; 
+	padding: 5px 20px; 
+	list-style: none; 
+	float: left; 
+}
+
+.tab {
+	padding: 10px; 
+	display: none;
+}
+
+.selected { 
+	display: block;
+} 
+
+.selected-li { 
+	background: darkslategray;
+	font-size: 1.1em;
+} 
+
+#tabs-title li:hover { 
+	background: rgb(34, 58, 58);
+} 
+
+#tabs-title {
+	height: 30px;
+}
+
+.container-head {
+	width: 100%;
+	height: 40px;
+	padding: 0 5px;
+	margin: 0 0;
+	display: block;
+	background-color: rgb(35, 35, 35);
+}
+
+.container-editor {
+	width: 100%;
+	height: 100%;
+	padding: 0 0;
+	margin: 0 0;
+	display: block;
+}
+
+.col-1-4 {
+	width: 30%;
+	float: right;
+	padding: 0px 10px;
+	background-color: dimgrey;
+}
+
+.col-3-4 {
+	position: relative;
+	overflow: auto;
+	width: 70%;
+	height: inherit;
+	float: left;
+	background-color: rgb(50, 50, 35);
+}
+
+.tool-button {
+	display: flex;
+	float: left;
+	height: 30px;
+	width: 60px;
+	margin: 5px;
+	justify-content: center;
+	align-items: center;
+}
+
+.div-table {
+	display:  table;
+    width:100%;
+    border:1px solid  #666666;
+    border-spacing:3px;
+}
+
+.div-head-row {
+	display:table-row;
+	width:100%;
+	background-color: rgb(40, 40, 40);
+}
+
+.div-row {
+	display:table-row;
+	width:100%;
+}
+
+.div-cell {
+	float:left;
+	display:table-column;
+	width: calc( (100% - 250px)/3 );
+}
+
+.data-check {
+	text-align: center;
+	width: 50px;
+}
+
+.focused {
+	background-color: rgb(83, 83, 83);
+}
+
+.inspector-table {
+    display:  table;
+    width:100%;
+	margin: 5px;
+	padding: 0 10px;
+   	border-spacing:5px;
+ }
+
+.inspector-row {
+    display:table-row;
+    width:100%;
+}
+
+.inspector-caption {
+    float:left;/*fix for  buggy browsers*/
+    display:table-column;
+    width:40%;
+}
+
+.inspector-data {
+    float:left;/*fix for  buggy browsers*/
+    display:table-column;
+	width:60%;
+}
+
+.inspector-editor {
+	width:100%;
+}

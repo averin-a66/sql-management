@@ -8,6 +8,7 @@ import * as Interfaces from './Interface/interfaces';
 import * as pgDrv from './sqlProvider/PGDriver';
 import PG = pgDrv.PGDriver.DBDriver;
 import * as fileExplorer from './Utils/fileExplorer';
+import {SqlTableEditor} from './Editors/tableEditor';
 
 
 import IDBNode = Interfaces.sqlProvider.IDBNode;
@@ -156,7 +157,8 @@ export class SqlManagementProvider implements vscode.TreeDataProvider<IDBNode> {
 			const str : string = table.value.CreateScript('FOR_EDIT', { typeResultFile: 'json' });
 			try {
 				await FileSystem.writeFile(nameFile, str, {create: true, overwrite:true});
-				vscode.window.showTextDocument(nameFile);
+				const tableJson = JSON.parse(str);
+				const panel = new SqlTableEditor(this.context, tableJson, table);
 			}
 			catch (e) {
 				console.error(e);

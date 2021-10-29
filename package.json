@@ -21,7 +21,8 @@
 		"onView:sqlManagement",
 		"onLanguage:json",
 		"onLanguage:jsonc",
-		"onCommand:testView.reveal"
+		"onCommand:testView.reveal",
+		"onCustomEditor:sqlExplorer.tableEditor"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -180,7 +181,6 @@
 		"typescript": "^4.4.3"
 	},
 	"dependencies": {
-		"ftp": "^0.3.10",
 		"jsonc-parser": "^0.4.2",
 		"minimist": "^0.2.1",
 		"mkdirp": "^0.5.1",
