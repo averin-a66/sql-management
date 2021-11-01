@@ -3,6 +3,8 @@ import * as Interfaces from '../Interface/interfaces';
 import { getNonce } from '../Utils/Utils';
 
 import IDBNode = Interfaces.sqlProvider.IDBNode;
+import ITableColumn = Interfaces.sqlProvider.ITableColumn;
+
 export class SqlTableEditor {
 	panel: vscode.WebviewPanel;
 
@@ -18,6 +20,7 @@ export class SqlTableEditor {
 		);
 
 		this.panel.webview.html = this.getHtmlForWebview(this.panel.webview);
+		this.updatePropertiesColumn(1);
 
 		function updateWebview() {
 			this.panel.webview.postMessage({
@@ -29,7 +32,7 @@ export class SqlTableEditor {
 		this.panel.webview.onDidReceiveMessage(e => {
 			switch (e.type) {
 				case 'focus':
-					this.updateProperties( this.createColumnProperties(e.id), 'ColumnProperties', 'Свойства столбца');
+					this.updatePropertiesColumn(Number.parseInt(e.id.substr(3)));
 					return;
 
 				case 'add-column':
@@ -49,25 +52,36 @@ export class SqlTableEditor {
 		updateWebview();
 	}
 
-	private createColumnProperties(id: string) : string {
+	private updatePropertiesColumn(columnIdx : number) : void {
+		this.updateProperties( this.createColumnProperties(columnIdx), 'ColumnProperties', 'Свойства столбца');
+	}
+
+	private createColumnProperties(idx: number) : string {
 		let result = '';
 
-			result = 
-			`Inspector column
-			<div class="inspector-table">
-		    	<div class="inspector-row">
-					<div class="inspector-caption">Имя столбца</div>
-			   		<div class="inspector-data"><input class="inspector-editor" type="text" value="item.name"></div>
-			    </div>
-			    <div class="inspector-row">
-				   <div class="inspector-caption">Имя таблицы</div>
-				   <div class="inspector-data"><input class="inspector-editor" type="text"></input></div>
+		const clm :ITableColumn = this.tableJson.columns[idx-1];
+
+		function htmlEditorRow( caption : string, type : string, id : string, value : string ) : string {
+			const html = 
+			`<div class="inspector-row">
+				<div class="inspector-caption">${caption}</div>
+			   	<div class="inspector-data">
+			   		<input id="${id}" class="inspector-editor" type="${type}" `+ 
+						(type === 'checkbox' ? (value=='true'? 'checked': '') : `value="${value===null? '' : value }"`)+`>
 				</div>
-		   		<div class="inspector-row">
-			   		<div class="inspector-caption">Описание</div>
-			   		<div class="inspector-data"><textarea class="inspector-editor" rows="5"></textarea></div>
-				</div>
-			 </div>`;
+			</div>`;
+			return html;
+		}
+
+		result = 
+			`Свойства столбца
+			<div class="inspector-table">`+
+				htmlEditorRow( 'Имя столбца', 'text', 'edit-name', clm.name )+
+				htmlEditorRow( 'Не NULL', 'checkbox', 'edit-nullable', clm.isNullable.toString() )+
+				htmlEditorRow( 'Уникальный', 'checkbox', 'edit-unique', clm.isUnique.toString() )+
+				htmlEditorRow( 'Автоинкриментнный', 'checkbox', 'edit-autoIncremental', clm.isAutoIncremental.toString() )+
+				htmlEditorRow( 'Значение по умолчанию', 'text', 'edit-default', clm.defaultValue )+
+			`</div>`;
 		return result;
 	}
 
@@ -95,12 +109,12 @@ export class SqlTableEditor {
 			   <div class="div-cell">Тип данных</div>
 			   <div class="div-cell data-check">Не NULL</div>
 			   <div class="div-cell data-check"">Уника-льный</div>
-			   <div class="div-cell data-check"">Автоин-кримен-тный</div>
+			   <div class="div-cell data-check"">Автоин-кримен-тнный</div>
 			   <div class="div-cell">Значение по умолчанию</div>
 			</div>`;
 		let tabIndex = 0;
 		for (const column of this.tableJson.columns || []) {
-			const focused = tabIndex==1 ? ' focused' : '';
+			const focused = tabIndex==0 ? ' focused' : '';
 			const isPK = tabIndex==0 ? '🔑' : '▫';
 			html +=  
 			`<div class="div-row${focused}" tabIndex="${tabIndex++}" id="Clm${tabIndex}" onfocus="doFocusedField('Clm${tabIndex}')">

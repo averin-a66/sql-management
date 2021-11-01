@@ -63,16 +63,16 @@
 }
 
 .col-1-4 {
-	width: 30%;
+	width: 40%;
 	float: right;
-	padding: 0px 10px;
-	background-color: dimgrey;
+	padding: 0px 0px;
+	background-color: rgb(50, 50, 50);
 }
 
 .col-3-4 {
 	position: relative;
 	overflow: auto;
-	width: 70%;
+	width: 60%;
 	height: inherit;
 	float: left;
 	background-color: rgb(50, 50, 35);
@@ -91,7 +91,7 @@
 .div-table {
 	display:  table;
     width:100%;
-    border:1px solid  #666666;
+    border:1px solid  #484848;
     border-spacing:3px;
 }
 
@@ -106,6 +106,10 @@
 	width:100%;
 }
 
+.div-row:nth-child(odd) {
+	background-color:rgb(50, 50, 50);
+}
+
 .div-cell {
 	float:left;
 	display:table-column;
@@ -117,21 +121,21 @@
 	width: 50px;
 }
 
-.focused {
-	background-color: rgb(83, 83, 83);
-}
-
 .inspector-table {
     display:  table;
     width:100%;
 	margin: 5px;
-	padding: 0 10px;
+	padding: 0 0;
    	border-spacing:5px;
  }
 
 .inspector-row {
     display:table-row;
     width:100%;
+}
+
+.inspector-row:nth-child(odd) {
+    background-color:rgb(55, 55, 55);
 }
 
 .inspector-caption {
@@ -148,4 +152,12 @@
 
 .inspector-editor {
 	width:100%;
+}
+
+.focused {
+	background-color: rgb(83, 83, 83);
+}
+
+.focused:nth-child(odd) {
+	background-color: rgb(83, 83, 83);
 }
