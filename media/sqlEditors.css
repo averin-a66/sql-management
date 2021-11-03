@@ -82,12 +82,15 @@
 	display: flex;
 	float: left;
 	height: 30px;
-	width: 60px;
+	width: 80px;
 	margin: 5px;
 	justify-content: center;
 	align-items: center;
+	background-color: rgb(113, 113, 114);
 }
-
+.tool-button:enabled {
+	background-color: rgb(24, 4, 207);
+}
 .div-table {
 	display:  table;
     width:100%;
@@ -98,11 +101,13 @@
 .div-head-row {
 	display:table-row;
 	width:100%;
+	margin: 5px;
 	background-color: rgb(40, 40, 40);
 }
 
 .div-row {
 	display:table-row;
+	margin: 5px;
 	width:100%;
 }
 
@@ -112,6 +117,7 @@
 
 .div-cell {
 	float:left;
+	margin: 4px 0;
 	display:table-column;
 	width: calc( (100% - 250px)/3 );
 }
@@ -160,4 +166,13 @@
 
 .focused:nth-child(odd) {
 	background-color: rgb(83, 83, 83);
+}
+
+.sql-viewer {
+	display: block;
+  	width: 100%;
+  	box-sizing: border-box;
+  	resize: none;
+  	min-height: 3em;
+	background-color: rgb(148, 143, 143);
 }
