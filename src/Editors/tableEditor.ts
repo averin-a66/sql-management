@@ -7,9 +7,13 @@ import ITableColumn = Interfaces.sqlProvider.ITableColumn;
 
 export class SqlTableEditor {
 	panel: vscode.WebviewPanel;
+	hasChanged : boolean;
+	tableJsonStart : any;
 
 	constructor(private context: vscode.ExtensionContext, private tableJson: any, private tableNode: IDBNode) {
 		const title = `${tableJson.schema}.${tableJson.name} [${tableNode.rootDB.name}]`;
+		this.tableJsonStart = tableJson;
+		this.hasChanged = false;
 		this.panel = vscode.window.createWebviewPanel(
 			'tableEditor',  		// Identifies the type of the webview. Used internally
 			title, 					// Title of the panel displayed to the user
@@ -28,17 +32,27 @@ export class SqlTableEditor {
 				text: JSON.stringify(tableJson, null, 2),
 			});
 		}
-
+		
 		this.panel.webview.onDidReceiveMessage(e => {
 			switch (e.type) {
 				case 'focus':
 					this.updatePropertiesColumn(Number.parseInt(e.id.substr(3)));
 					return;
 
+				case 'change-editor':
+					this.processChangeColumnData(e);
+					return;
+
 				case 'add-column':
 					return;
 
 				case 'delete-column':
+					return;
+
+				case 'save-data-prepare':
+					this.doSavePrepare();
+					return;
+				case 'execute-sql':
 					return;
 			}
 		});
@@ -50,6 +64,56 @@ export class SqlTableEditor {
 		);
 
 		updateWebview();
+	}
+
+	private processChangeColumnData( e: any) : void {
+		const idx =  Number.parseInt(e.idx.substr('column-'.length));
+		const nameProperty = e.id.substr('edit-'.length);
+		const clm : ITableColumn = this.tableJson.columns[idx-1];
+		clm[nameProperty] = e.value;
+		this.hasChanged = true;
+	}
+
+	private setActivePage(idx : number) {
+		this.panel.webview.postMessage({
+			type: 'set-active-page',
+			indexPage: idx
+		});
+	}
+
+	private createSqlText() : {text : string, countLine : number } {
+		let sql = '';
+
+		sql = 
+		`CREATE TABLE [dbo].[cfg_Config](
+			[CONFIG_NO] [bigint] NOT NULL,
+			[STT] [tinyint] NOT NULL,
+			[TS] [timestamp] NOT NULL,
+			[NAME] [varchar](128) NOT NULL,
+			[NAME_SYS] [varchar](128) NOT NULL,
+			[VAL] [varchar](1000) NULL,
+			[STATE] [int] NOT NULL,
+			[TAG] [varchar](1000) NULL,
+			[GROUP_ENM] [smallint] NOT NULL,
+			[CLASS_NO] [bigint] NOT NULL,
+		 CONSTRAINT [PK__cfg_Config] PRIMARY KEY NONCLUSTERED 
+		(
+			[CONFIG_NO] ASC
+		)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
+		) ON [PRIMARY]`;
+
+		return {text:sql, countLine:16};
+	}
+
+	private doSavePrepare() : void {
+		console.log('doSave');
+		const sql = this.createSqlText();
+		this.panel.webview.postMessage({
+			type: 'view-sql-text',
+			sql : sql.text,
+			countRow: sql.countLine
+		});
+		//this.tableJsonStart = this.tableJson;
 	}
 
 	private updatePropertiesColumn(columnIdx : number) : void {
@@ -67,7 +131,9 @@ export class SqlTableEditor {
 				<div class="inspector-caption">${caption}</div>
 			   	<div class="inspector-data">
 			   		<input id="${id}" class="inspector-editor" type="${type}" `+ 
-						(type === 'checkbox' ? (value=='true'? 'checked': '') : `value="${value===null? '' : value }"`)+`>
+						(type === 'checkbox' ? `onclick="doChangeEditor('${id}')"` : ` onchange="doChangeEditor('${id}')"`)+
+						(type === 'checkbox' ? (value=='true'? ' checked': '') : ` value="${value===null? '' : value }"`)+
+						`/>
 				</div>
 			</div>`;
 			return html;
@@ -75,12 +141,12 @@ export class SqlTableEditor {
 
 		result = 
 			`Свойства столбца
-			<div class="inspector-table">`+
+			<div class="inspector-table" id="column-${idx}">`+
 				htmlEditorRow( 'Имя столбца', 'text', 'edit-name', clm.name )+
-				htmlEditorRow( 'Не NULL', 'checkbox', 'edit-nullable', clm.isNullable.toString() )+
-				htmlEditorRow( 'Уникальный', 'checkbox', 'edit-unique', clm.isUnique.toString() )+
-				htmlEditorRow( 'Автоинкриментнный', 'checkbox', 'edit-autoIncremental', clm.isAutoIncremental.toString() )+
-				htmlEditorRow( 'Значение по умолчанию', 'text', 'edit-default', clm.defaultValue )+
+				htmlEditorRow( 'Не NULL', 'checkbox', 'edit-isNullable', clm.isNullable.toString() )+
+				htmlEditorRow( 'Уникальный', 'checkbox', 'edit-isUnique', clm.isUnique.toString() )+
+				htmlEditorRow( 'Автоинкриментнный', 'checkbox', 'edit-isAutoIncremental', clm.isAutoIncremental.toString() )+
+				htmlEditorRow( 'Значение по умолчанию', 'text', 'edit-defaultValue', clm.defaultValue )+
 			`</div>`;
 		return result;
 	}
@@ -165,10 +231,12 @@ export class SqlTableEditor {
 						<li id="tab-title5" onclick="SelectTab(5);" class="tab-title">Триггеры</li>
 						<li id="tab-title6" onclick="SelectTab(6);" class="tab-title">Данные</li>
 						<li id="tab-title7" onclick="SelectTab(7);" class="tab-title">DDL</li>
+						<li id="tab-title8" onclick="SelectTab(8);" class="tab-title">Скрипт</li>
 		  			</ul>
 			  		<div id="tabs">
 						<div class="tab selected" id="tab1">
 							<div class="container-head">
+								<button class="tool-button" id="button-save" onclick="doSavePrepare()" disabled>Сохранить</button>
 								<button class="tool-button" id="button-add">Add</button>
 								<button class="tool-button" id="button-remove">Remove</button>
 							</div>
@@ -199,6 +267,14 @@ export class SqlTableEditor {
 						</div>
 						<div class="tab" id="tab7">
 							7
+						</div>
+						<div class="tab" id="tab8">
+							<div class="container-head">
+								<button class="tool-button" id="button-execute-sql" onclick="doExecSql()">Выполнить</button>
+							</div>
+							<div class="container-editor">
+							  <textarea class="sql-viewer" id="sql-text" readonly></textarea>
+							</div>
 						</div>
 					</div>
 				</div>
